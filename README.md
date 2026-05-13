@@ -13,59 +13,52 @@ To write a python program to perform stop and wait protocol
 ```
 import socket
 
-server = socket.socket()
-server.bind(('localhost', 8000))
-server.listen(1)
-print("Server is listening...")
-conn, addr = server.accept()
-print(f"Connected with {addr}")
+
+s = socket.socket()
+
+
+s.bind(('localhost', 8000))
+
+s.listen(5)
+
+print("Server waiting for connection...")
+
+
+c, addr = s.accept()
+print("Connected with:", addr)
 
 while True:
-    data = conn.recv(1024).decode()
+   
+    i = input("Enter a data: ")
+    c.send(i.encode())
 
-    if data:
-        print(f"Received: {data}")
-        conn.send("ACK".encode())
+    
+    ack = c.recv(1024).decode()
 
-        if data.lower() == 'exit':  
-            print("Connection closed by client")
-            conn.close()
-            break
-```
+    if ack:
+        print("Client says:", ack)
+        continue
+    else:
+        c.close()
+        break
 ## Client:
 ```
 import socket
-import time
 
-client = socket.socket()
-client.connect(('localhost', 8000))
-client.settimeout(5)  
+s = socket.socket()
+s.connect(('localhost', 8000))
 
 while True:
-    msg = input("Enter a message (or type 'exit' to quit): ")
-
-    client.send(msg.encode())  
-
-    if msg.lower() == 'exit':  
-        print("Connection closed by client")
-        client.close()
-        break
-
-    try:
-        ack = client.recv(1024).decode()
-        if ack == "ACK":
-            print(f"Server acknowledged: {ack}")
-    except socket.timeout:
-        print("No ACK received, retransmitting...")
-        continue  
-```
+    print(s.recv(1024).decode())
+    s.send("Acknowledgement Received".encode()) 
+``
 ## OUTPUT
-## Server
-<img width="916" height="259" alt="Screenshot 2025-09-23 084755" src="https://github.com/user-attachments/assets/feda5607-d3b6-4c83-8e89-6bc450fa4858" />
 
+## Server
+<img width="1142" height="493" alt="image" src="https://github.com/user-attachments/assets/61fac723-0b36-4fd2-b86a-411aeba3ec9a" />
 
 ## Client
-<img width="925" height="266" alt="Screenshot 2025-09-23 084917" src="https://github.com/user-attachments/assets/a3aedd9d-0509-4e07-a5d2-2be18e98ced2" />
+<img width="1062" height="498" alt="image" src="https://github.com/user-attachments/assets/5d0ad369-761d-49e9-ae0b-5a115c8800b5" />
 
 
 ## RESULT
